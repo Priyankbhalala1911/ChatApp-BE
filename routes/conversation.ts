@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { UserAuth } from "../middleware/auth";
-import { getConversations, getMessages } from "../controller/conversation";
+import {
+  getReceiversMessagedByUser,
+  getConversations,
+  getMessages,
+} from "../controller/conversation";
 
 const router = Router();
 
-router.get("/", UserAuth, getConversations);
-router.get("/:id/messages", UserAuth, getMessages);
+router.get("/", UserAuth, getReceiversMessagedByUser);
+router.get("/id", UserAuth, getConversations);
+router.get("/:conversationId/messages", UserAuth, getMessages);
 
 export default router;

@@ -89,7 +89,7 @@ export const Chat = async (req: AuthenticatedRequest, res: Response) => {
 
     io.to(receiverId).emit("received_message", {
       ...message,
-      createdAt: message.crearedAt.toISOString(),
+      createdAt: message.createdAt.toISOString(),
     });
 
     res.status(200).json({

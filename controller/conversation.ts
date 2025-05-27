@@ -8,24 +8,94 @@ interface AuthenticatedRequest extends Request {
   user?: User;
 }
 
+export const getReceiversMessagedByUser = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        error: "Unauthorized access",
+      });
+      return;
+    }
+
+    const messages = await AppDataSourse.getRepository(Message)
+      .createQueryBuilder("message")
+      .leftJoinAndSelect("message.receiver", "receiver")
+      .where("message.sender.id = :userId", { userId })
+      .getMany();
+
+    if (!messages || messages.length === 0) {
+      res.status(404).json({
+        success: false,
+        error: "No sent messages found",
+      });
+      return;
+    }
+
+    const uniqueReceiversMap = new Map<string, User>();
+    messages.forEach((msg) => {
+      if (msg.receiver && !uniqueReceiversMap.has(msg.receiver.id)) {
+        uniqueReceiversMap.set(msg.receiver.id, msg.receiver);
+      }
+    });
+
+    const uniqueReceivers = Array.from(uniqueReceiversMap.values());
+
+    res.status(200).json({
+      success: true,
+      data: uniqueReceivers,
+    });
+  } catch (error) {
+    console.error("Error fetching receivers:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch receivers",
+    });
+  }
+};
+
 export const getConversations = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> => {
   try {
-    const userId = req.user?.id;
+    const { receiverId } = req.query;
+    const senderId = req.user?.id;
 
-    const conversations = await AppDataSourse.getRepository(Conversation)
+    if (!senderId || !receiverId) {
+      res.status(400).json({
+        success: false,
+        error: "Sender ID and Receiver ID are required.",
+      });
+      return;
+    }
+
+    const conversation = await AppDataSourse.getRepository(Conversation)
       .createQueryBuilder("conversation")
-      .innerJoinAndSelect("conversation.users", "user")
-      .innerJoinAndSelect("conversation.messages", "message")
-      .where("user.id = :userId", { userId })
-      .orderBy("message.crearedAt", "ASC")
-      .getMany();
+      .innerJoin("conversation.users", "user")
+      .where("user.id IN (:...userIds)", {
+        userIds: [senderId, receiverId],
+      })
+      .groupBy("conversation.id")
+      .having("COUNT(DISTINCT user.id) = 2")
+      .getOne();
+
+    if (!conversation) {
+      res.status(404).json({
+        success: false,
+        error: "Conversation not found",
+      });
+      return;
+    }
 
     res.status(200).json({
       success: true,
-      data: conversations,
+      data: conversation,
     });
   } catch (error) {
     console.error("Error fetching conversations:", error);
@@ -64,7 +134,7 @@ export const getMessages = async (
       .innerJoinAndSelect("message.sender", "sender")
       .innerJoinAndSelect("message.receiver", "receiver")
       .where("message.conversationId = :conversationId", { conversationId })
-      .orderBy("message.crearedAt", "ASC")
+      .orderBy("message.createdAt", "ASC")
       .getMany();
 
     res.status(200).json({

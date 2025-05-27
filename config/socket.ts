@@ -63,10 +63,9 @@ export const initialSocketServer = () => {
 
         const payload = {
           ...message,
-          createdAt: message.crearedAt.toISOString(),
+          createdAt: message.createdAt.toISOString(),
         };
 
-        // socket.to(receiverId).emit("received_message", payload);
         io.to(senderId.toString()).emit("received_message", payload);
         io.to(receiverId.toString()).emit("received_message", payload);
       } catch (err) {

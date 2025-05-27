@@ -26,5 +26,5 @@ export class Message {
   conversation!: Conversation;
 
   @CreateDateColumn()
-  crearedAt!: Date;
+  createdAt!: Date;
 }
