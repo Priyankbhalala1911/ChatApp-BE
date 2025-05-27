@@ -1,9 +1,9 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "ESNext",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsc",
     "dev": "nodemon ./app.ts",
     "start": "node dist/app.js",
     "typeorm": "typeorm-ts-node-commonjs",
