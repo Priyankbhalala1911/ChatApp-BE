@@ -5,6 +5,7 @@ import { AppDataSourse } from "./database";
 import { User } from "../models/user";
 import { Conversation } from "../models/conversation";
 import { Message } from "../models/message";
+import "dotenv/config";
 const app = express();
 
 const server = http.createServer(app);
