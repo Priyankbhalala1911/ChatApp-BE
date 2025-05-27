@@ -11,7 +11,6 @@ export const AppDataSourse = new DataSource({
   synchronize: false,
   logging: false,
   entities: [User, Message, Conversation],
-  schema: "public",
   ssl: {
     rejectUnauthorized: true,
   },
