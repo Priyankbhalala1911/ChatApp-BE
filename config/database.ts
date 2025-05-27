@@ -4,6 +4,7 @@ import { Message } from "../models/message";
 import { Conversation } from "../models/conversation";
 import "dotenv/config";
 import { initialSocketServer } from "./socket";
+import "reflect-metadata";
 
 export const AppDataSourse = new DataSource({
   type: "postgres",
