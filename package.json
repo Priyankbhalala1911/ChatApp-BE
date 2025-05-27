@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "ESNext",
+  "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon ./app.ts",
