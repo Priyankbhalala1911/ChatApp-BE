@@ -13,7 +13,7 @@ export const AppDataSourse = new DataSource({
   logging: false,
   entities: ["models/*.ts"],
   ssl: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
   },
   migrations: ["migrations/*.ts"],
 });
