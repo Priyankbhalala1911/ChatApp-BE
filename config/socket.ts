@@ -5,14 +5,13 @@ import { AppDataSourse } from "./database";
 import { User } from "../models/user";
 import { Conversation } from "../models/conversation";
 import { Message } from "../models/message";
-import "dotenv/config";
 const app = express();
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://chat-app-smoky-phi.vercel.app/",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   },
 });

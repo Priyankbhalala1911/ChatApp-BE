@@ -11,7 +11,7 @@ export const AppDataSourse = new DataSource({
   url: process.env.DATABASE_URL,
   synchronize: false,
   logging: false,
-  entities: ["dist/models/*.js"],
+  entities: ["models/*.ts"],
   ssl: {
     rejectUnauthorized: true,
   },
@@ -20,9 +20,8 @@ export const AppDataSourse = new DataSource({
 
 export const intializeDatabase = async () => {
   try {
-    console.log(process.env.DATABASE_URL);
-    // await AppDataSourse.initialize();
-    // initialSocketServer();
+    await AppDataSourse.initialize();
+    initialSocketServer();
     console.log("Database connection established successfully.");
   } catch (error) {
     console.log("Error connecting to the database", error);
