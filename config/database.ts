@@ -9,13 +9,15 @@ import { initialSocketServer } from "./socket";
 export const AppDataSourse = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
-  synchronize: false,
+  synchronize: true,
   logging: false,
-  entities: ["models/*.ts"],
+  // entities: ["models/*.ts"],
+  entities: ["dist/models/*.js"],
   ssl: {
     rejectUnauthorized: false,
   },
-  migrations: ["migrations/*.ts"],
+  // migrations: ["migrations/*.ts"],
+  migrations: ["dist/migrations/*.js"],
 });
 
 export const intializeDatabase = async () => {
