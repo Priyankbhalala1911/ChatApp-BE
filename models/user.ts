@@ -39,6 +39,9 @@ export class User {
   @Column()
   profileImage!: string;
 
+  @Column({ default: false })
+  isOnline!: boolean;
+
   @OneToMany(() => Message, (m) => m.sender)
   sentMessages!: Message[];
 

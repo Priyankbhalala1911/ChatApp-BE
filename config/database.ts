@@ -15,7 +15,7 @@ export const AppDataSourse = new DataSource({
   ssl: {
     rejectUnauthorized: true,
   },
-  migrations: ["migrations/*.js"],
+  migrations: ["migrations/*.ts"],
 });
 
 export const intializeDatabase = async () => {
