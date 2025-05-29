@@ -16,39 +16,32 @@ const io = new Server(server, {
   },
 });
 
-// Store online users with their socket IDs
 const onlineUsers = new Map<string, string>();
 
 export const initialSocketServer = () => {
   io.on("connection", (socket) => {
     console.log("New connection:", socket.id);
 
-    // Handle user coming online
     socket.on("user_online", async (userId: string) => {
       try {
-        // Store user's socket ID
         onlineUsers.set(userId, socket.id);
-        
-        // Update user's online status in database
+
         const userRepo = AppDataSourse.getRepository(User);
         await userRepo.update(userId, { isOnline: true });
 
-        // Notify all clients about user's online status
         io.emit("user_status_changed", { userId, isOnline: true });
-        
+
         console.log(`User ${userId} is now online`);
       } catch (err) {
         console.error("Error handling user online:", err);
       }
     });
 
-    // Handle private messaging room join
     socket.on("join", (userId: string) => {
       socket.join(userId);
       console.log(`User ${userId} joined their private room`);
     });
 
-    // Handle sent messages
     socket.on("sent_message", async ({ senderId, receiverId, text }) => {
       try {
         if (!text?.trim() || !receiverId) return;
@@ -98,10 +91,8 @@ export const initialSocketServer = () => {
       }
     });
 
-    // Handle disconnection
     socket.on("disconnect", async () => {
       try {
-        // Find user ID by socket ID
         let disconnectedUserId: string | undefined;
         for (const [userId, socketId] of onlineUsers.entries()) {
           if (socketId === socket.id) {
@@ -111,14 +102,11 @@ export const initialSocketServer = () => {
         }
 
         if (disconnectedUserId) {
-          // Update user's online status in database
           const userRepo = AppDataSourse.getRepository(User);
           await userRepo.update(disconnectedUserId, { isOnline: false });
 
-          // Remove from online users
           onlineUsers.delete(disconnectedUserId);
 
-          // Notify all clients about user's offline status
           io.emit("user_status_changed", {
             userId: disconnectedUserId,
             isOnline: false,
