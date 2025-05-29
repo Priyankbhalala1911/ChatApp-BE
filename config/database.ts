@@ -1,8 +1,5 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { User } from "../models/user";
-import { Message } from "../models/message";
-import { Conversation } from "../models/conversation";
 import "dotenv/config";
 import { initialSocketServer } from "./socket";
 
