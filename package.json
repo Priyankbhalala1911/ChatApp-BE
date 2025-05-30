@@ -29,7 +29,6 @@
     "reflect-metadata": "^0.2.2",
     "server": "file:",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
     "typeorm": "^0.3.24"
   },
   "devDependencies": {

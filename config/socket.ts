@@ -91,6 +91,26 @@ export const initialSocketServer = () => {
       }
     });
 
+    socket.on("message_seen", async ({ messageId }) => {
+      const messageRepo = AppDataSourse.getRepository(Message);
+
+      const message = await messageRepo.findOne({
+        where: { id: messageId },
+        relations: ["sender", "receiver"],
+      });
+
+      if (!message) return;
+
+      if (!message.seen) {
+        message.seen = true;
+        await messageRepo.save(message);
+      }
+
+      io.to(message.sender?.id).emit("message_seen_update", {
+        messageId,
+      });
+    });
+
     socket.on("disconnect", async () => {
       try {
         let disconnectedUserId: string | undefined;

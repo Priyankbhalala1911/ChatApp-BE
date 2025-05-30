@@ -16,6 +16,9 @@ export class Message {
   @Column()
   text!: string;
 
+  @Column({ default: false })
+  seen!: boolean;
+
   @ManyToOne(() => User, (m) => m.sentMessages)
   sender!: User;
 
