@@ -42,6 +42,14 @@ export const initialSocketServer = () => {
       console.log(`User ${userId} joined their private room`);
     });
 
+    socket.on("typing", ({ receiverId, userId }) => {
+      socket.to(receiverId).emit("typing", { receiverId, userId });
+    });
+
+    socket.on("stoptyping", ({ receiverId, userId }) => {
+      socket.to(receiverId).emit("stoptyping", { receiverId, userId });
+    });
+
     socket.on("sent_message", async ({ senderId, receiverId, text }) => {
       try {
         if (!text?.trim() || !receiverId) return;
