@@ -17,6 +17,12 @@ export class Conversation {
   @Column({ default: false })
   isGroup!: boolean;
 
+  @Column()
+  lastMessage!: string;
+
+  @Column({ type: "timestamp" })
+  lastMessageTime!: string;
+
   @ManyToMany(() => User)
   @JoinTable()
   users!: User[];

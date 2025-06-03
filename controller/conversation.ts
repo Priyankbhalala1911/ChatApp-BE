@@ -23,38 +23,52 @@ export const getReceiversMessagedByUser = async (
       return;
     }
 
-    const messages = await AppDataSourse.getRepository(Message)
-      .createQueryBuilder("message")
-      .leftJoinAndSelect("message.receiver", "receiver")
-      .where("message.sender.id = :userId", { userId })
+    const conversations = await AppDataSourse.getRepository(Conversation)
+      .createQueryBuilder("conversation")
+      .innerJoin(
+        "conversation.users",
+        "currentUser",
+        "currentUser.id = :userId",
+        { userId }
+      )
+      .leftJoinAndSelect("conversation.users", "allUsers")
+      .where("conversation.isGroup = false")
       .getMany();
 
-    if (!messages || messages.length === 0) {
+    const result = conversations
+      .map((conversation) => {
+        const receiver = conversation.users.find((u) => u.id !== userId);
+        if (!receiver) return null;
+
+        return {
+          id: receiver.id,
+          name: receiver.name,
+          email: receiver.email,
+          profileImage: receiver.profileImage,
+          isOnline: receiver.isOnline,
+          lastMessage: conversation.lastMessage,
+          lastMessageTime: conversation.lastMessageTime,
+        };
+      })
+      .filter((item) => item !== null);
+
+    if (result.length === 0) {
       res.status(404).json({
         success: false,
-        error: "No sent messages found",
+        error: "No messaged users found",
       });
       return;
     }
 
-    const uniqueReceiversMap = new Map<string, User>();
-    messages.forEach((msg) => {
-      if (msg.receiver && !uniqueReceiversMap.has(msg.receiver.id)) {
-        uniqueReceiversMap.set(msg.receiver.id, msg.receiver);
-      }
-    });
-
-    const uniqueReceivers = Array.from(uniqueReceiversMap.values());
-
     res.status(200).json({
       success: true,
-      data: uniqueReceivers,
+      data: result,
     });
   } catch (error) {
-    console.error("Error fetching receivers:", error);
+    console.error("Error fetching messaged receivers:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to fetch receivers",
+      error: "Failed to fetch messaged receivers",
     });
   }
 };

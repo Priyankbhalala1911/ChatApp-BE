@@ -78,6 +78,10 @@ export const initialSocketServer = () => {
           conversation.isGroup = false;
           conversation.users = [sender, receiver];
           await convRepo.save(conversation);
+        } else {
+          conversation.lastMessage = text;
+          conversation.lastMessageTime = new Date().toISOString();
+          await convRepo.save(conversation);
         }
 
         const message = new Message();
