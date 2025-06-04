@@ -77,6 +77,8 @@ export const initialSocketServer = () => {
           conversation = new Conversation();
           conversation.isGroup = false;
           conversation.users = [sender, receiver];
+          conversation.lastMessage = text;
+          conversation.lastMessageTime = new Date().toISOString();
           await convRepo.save(conversation);
         } else {
           conversation.lastMessage = text;
@@ -93,7 +95,11 @@ export const initialSocketServer = () => {
 
         const payload = {
           ...message,
-          createdAt: new Date().toISOString(),
+          createdAt: message.createdAt.toISOString(),
+          conversation: {
+            id: conversation.id,
+            isGroup: conversation.isGroup,
+          },
         };
 
         io.to(senderId.toString()).emit("received_message", payload);
