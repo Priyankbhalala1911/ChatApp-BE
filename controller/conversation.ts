@@ -60,9 +60,15 @@ export const getReceiversMessagedByUser = async (
       return;
     }
 
+    const SoretedUser = result.sort(
+      (a, b) =>
+        new Date(b.lastMessageTime).getTime() -
+        new Date(a.lastMessageTime).getTime()
+    );
+
     res.status(200).json({
       success: true,
-      data: result,
+      data: SoretedUser,
     });
   } catch (error) {
     console.error("Error fetching messaged receivers:", error);
